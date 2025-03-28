@@ -1,0 +1,27 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1738254904463,
+      "tag": "0000_curvy_valkyrie",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1739202367351,
+      "tag": "0001_classy_ken_ellis",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1743055270074,
+      "tag": "0002_lethal_zodiak",
+      "breakpoints": true
+    }
+  ]
+}
