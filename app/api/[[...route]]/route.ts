@@ -5,6 +5,8 @@ import { zValidator } from '@hono/zod-validator'
 import accounts from "./accounts"
 import { HTTPException } from 'hono/http-exception'
 import categories from './categories'
+import transactions from './transactions'
+import summary from './summary'
 export const runtime = 'edge'
 
 
@@ -19,8 +21,10 @@ app.onError((err, c) => {
 })
 
 const routes = app
+  .route("/summary", summary)
   .route("/accounts", accounts)
-  .route("/categories", categories);
+  .route("/categories", categories)
+  .route("/transactions", transactions)
 
 export const GET = handle(app);
 export const POST = handle(app);
