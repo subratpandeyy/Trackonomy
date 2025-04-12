@@ -8,9 +8,7 @@ import { convertAmountToMiliunits } from "@/lib/utils";
 
 import { ImportTable } from "./import-table";
 
-const dateFormat = "yyyy-MM-dd HH:mm:ss";
 const outputFormat = "yyyy-MM-dd";
-
 const requireOptions = ["amount", "date", "payee"];
 
 interface SelectedColumnsState {
@@ -20,21 +18,23 @@ interface SelectedColumnsState {
 type Props = {
   data: string[][];
   onCancel: () => void;
-  onSubmit: (data: any) => void;
+  onSubmit: (data: Transaction[]) => void;
+};
+
+type Transaction = {
+  amount: number;
+  date: string;
+  payee?: string;
+  [key: string]: string | number | undefined;
 };
 
 export const ImportCard = ({ data, onCancel, onSubmit }: Props) => {
-  const [selectedColumns, setSelectedColumns] = useState<SelectedColumnsState>(
-    {},
-  );
+  const [selectedColumns, setSelectedColumns] = useState<SelectedColumnsState>({});
 
   const headers = data[0];
   const body = data.slice(1);
 
-  const onTableHeadSelectChange = (
-    columnIndex: number,
-    value: string | null,
-  ) => {
+  const onTableHeadSelectChange = (columnIndex: number, value: string | null) => {
     setSelectedColumns((prev) => {
       const newSelectedColumns = { ...prev };
 
@@ -56,9 +56,7 @@ export const ImportCard = ({ data, onCancel, onSubmit }: Props) => {
   const progress = Object.values(selectedColumns).filter(Boolean).length;
 
   const handleContinue = () => {
-    const getColumnIndex = (column: string) => {
-      return column.split("_")[1];
-    };
+    const getColumnIndex = (column: string) => column.split("_")[1];
 
     const mappedData = {
       headers: headers.map((_header, index) => {
@@ -72,72 +70,65 @@ export const ImportCard = ({ data, onCancel, onSubmit }: Props) => {
             const columnIndex = getColumnIndex(`column_${index}`);
             return selectedColumns[`column_${columnIndex}`] ? cell : null;
           });
-          return transformedRow.every((item) => item === null)
-            ? []
-            : transformedRow;
+          return transformedRow.every((item) => item === null) ? [] : transformedRow;
         })
         .filter((row) => row.length > 0),
     };
 
     const arrayOfData = mappedData.body.map((row) => {
-      return row.reduce((acc: any, cell, index) => {
+      return row.reduce((acc: Record<string, string>, cell, index) => {
         const header = mappedData.headers[index];
-        if (header !== null) {
+        if (header !== null && cell !== null) {
           acc[header] = cell;
         }
-
         return acc;
       }, {});
     });
 
-    console.log("Raw data before formatting:", arrayOfData);
+    const formattedData: Transaction[] = arrayOfData
+      .map((item) => {
+        try {
+          let parsedDate: Date | null = null;
+          const dateFormats = [
+            "M/d/yyyy HH:mm",
+            "M/d/yyyy",
+            "yyyy-MM-dd HH:mm:ss",
+            "yyyy-MM-dd",
+            "MM/dd/yyyy",
+            "dd/MM/yyyy",
+            "yyyy/MM/dd",
+          ];
 
-    const formattedData = arrayOfData.map((item) => {
-      try {
-        // Try to parse the date with multiple formats
-        let parsedDate;
-        const dateFormats = [
-          "M/d/yyyy HH:mm",  // Added format for dates like "1/4/2025 20:18"
-          "M/d/yyyy",
-          "yyyy-MM-dd HH:mm:ss",
-          "yyyy-MM-dd",
-          "MM/dd/yyyy",
-          "dd/MM/yyyy",
-          "yyyy/MM/dd"
-        ];
-
-        for (const format of dateFormats) {
-          try {
-            parsedDate = parse(item.date, format, new Date());
-            if (parsedDate.toString() !== "Invalid Date") {
-              console.log(`Successfully parsed date ${item.date} with format ${format}`);
-              break;
+          for (const fmt of dateFormats) {
+            try {
+              const tryParse = parse(item.date, fmt, new Date());
+              if (tryParse.toString() !== "Invalid Date") {
+                parsedDate = tryParse;
+                break;
+              }
+            } catch {
+              continue;
             }
-          } catch (e) {
-            console.log(`Failed to parse date ${item.date} with format ${format}`);
-            continue;
           }
+
+          if (!parsedDate || parsedDate.toString() === "Invalid Date") {
+            throw new Error(`Invalid date format: ${item.date}`);
+          }
+
+          const formattedItem: Transaction = {
+            ...item,
+            amount: convertAmountToMiliunits(parseFloat(item.amount)),
+            date: format(parsedDate, outputFormat),
+          };
+
+          return formattedItem;
+        } catch (error) {
+          console.error("Error processing row:", error);
+          return null;
         }
+      })
+      .filter((item): item is Transaction => item !== null);
 
-        if (!parsedDate || parsedDate.toString() === "Invalid Date") {
-          throw new Error(`Invalid date format: ${item.date}`);
-        }
-
-        const formattedItem = {
-          ...item,
-          amount: convertAmountToMiliunits(parseFloat(item.amount)),
-          date: format(parsedDate, outputFormat),
-        };
-
-        console.log("Formatted item:", formattedItem);
-        return formattedItem;
-      } catch (error) {
-        console.error("Error processing row:", error);
-        return null;
-      }
-    }).filter(Boolean);
-
-    console.log("Final formatted data:", formattedData);
     onSubmit(formattedData);
   };
 
@@ -145,9 +136,7 @@ export const ImportCard = ({ data, onCancel, onSubmit }: Props) => {
     <div className="max-w-screen-2xl mx-auto -mt-24 pb-10 w-full">
       <Card className="border-none drop-shadow-sm">
         <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
-          <CardTitle className="text-xl line-clamp-1">
-            Transaction History
-          </CardTitle>
+          <CardTitle className="text-xl line-clamp-1">Transaction History</CardTitle>
           <div className="flex flex-col lg:flex-row gap-y-2 items-center gap-x-2">
             <Button size="sm" onClick={onCancel} className="w-full lg:w-auto">
               Cancel
