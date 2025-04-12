@@ -3,7 +3,7 @@ import { Upload } from "lucide-react";
 import { useCSVReader } from "react-papaparse";
 
 type Props = {
-  onUpload: (data: any) => void;
+  onUpload: (data: string[][]) => void;
 };
 
 export const UploadButton = ({ onUpload }: Props) => {

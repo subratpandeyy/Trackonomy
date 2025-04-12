@@ -1,31 +1,24 @@
-import { format } from "date-fns";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
-import { formatCurrency } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator";
+interface CategoryTooltipProps {
+  category: string;
+  className?: string;
+}
 
-export const CategoryTooltip = ({ active, payload }: any) => {
-  if (!active) return null;
-
-  const name = payload[0].payload.name;
-  const value = payload[0].value;
-
+export const CategoryTooltip = ({ category, className }: CategoryTooltipProps) => {
   return (
-    <div className="rounded-sm bg-white shadow-sm border overflow-hidden">
-      <div className="text-sm p-2 px-3 bg-muted text-muted-foreground">
-        {name}
-      </div>
-      <Separator />
-      <div className="p-2 px-3 space-y-1">
-        <div className="flex items-center gap-x-2">
-          <div className="flex items-center justify-between gap-x-4">
-            <div className="size-1.5 bg-rose-500 rounded-full" />
-            <p className="text-sm text-muted-foreground">Expenses</p>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className={cn("text-sm font-medium", className)}>
+            {category}
           </div>
-          <p className="text-sm text-right font-medium">
-            {formatCurrency(value * -1)}
-          </p>
-        </div>
-      </div>
-    </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{category}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };

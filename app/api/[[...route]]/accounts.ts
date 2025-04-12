@@ -195,22 +195,24 @@ const app = new Hono()
         }
 
         const [data] = await db
-        .delete(accounts)
-        .where(
-            and(
-                eq(accounts.userId, auth.userId),
-                eq(accounts.id, id),
-            )
-        )
-        .returning({
-            id: accounts.id,
-        });
+        .select()
+        .from(accounts)
+        .where(eq(accounts.id, id));
 
-        if(!data) {
-            return c.json({error: "Not found"}, 404);
+        if (!data) {
+            return c.json({ error: "Not found" }, 404);
         }
 
-        return c.json({data});
+        if (data.userId !== auth.userId) {
+            return c.json({ error: "Unauthorized" }, 403);
+        }
+
+        const result = await db
+            .delete(accounts)
+            .where(eq(accounts.id, id))
+            .returning();
+
+        return c.json({ data: result[0] });
     }
     )
 

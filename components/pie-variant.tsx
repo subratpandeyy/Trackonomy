@@ -55,7 +55,10 @@ import {
               );
             }}
           />
-          <Tooltip content={<CategoryTooltip />} />
+          <Tooltip content={({ active, payload }) => {
+            if (!active || !payload || !payload.length) return null;
+            return <CategoryTooltip category={payload[0].name as string} />;
+          }} />
           <Pie
             data={data}
             cx="50%"
