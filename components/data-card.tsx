@@ -1,3 +1,4 @@
+"use-client";
 import { IconType } from "react-icons";
 import { VariantProps, cva } from "class-variance-authority";
 
@@ -83,7 +84,7 @@ export const DataCard = ({
             formattingFn={formatCurrency}
           />
         </h1>
-        <p
+        {/* <p
           className={cn(
             "text-muted-foreground text-sm line-clamp-1",
             percentageChange > 0 && "text-emerald-500",
@@ -92,7 +93,7 @@ export const DataCard = ({
         >
           {formatPercentage(percentageChange, { addPrefix: true })} from last
           period
-        </p>
+        </p> */}
       </CardContent>
     </Card>
   );

@@ -65,13 +65,29 @@ export const TransactionForm = ({
     });
 
     const handleSubmit = (values: FormValues) => {
-        const amount = parseFloat(values.amount);
-        const amountInMuiliunits = convertAmountToMiliunits(amount);
-        // onSubmit(values);
-        onSubmit({
-            ...values,
-            amount: amountInMuiliunits,
-        })
+        try {
+            const amount = parseFloat(values.amount);
+            if (isNaN(amount)) {
+                throw new Error("Invalid amount");
+            }
+            
+            const amountInMiliunits = convertAmountToMiliunits(amount);
+            
+            // Ensure date is properly formatted
+            const formattedDate = new Date(values.date);
+            if (isNaN(formattedDate.getTime())) {
+                throw new Error("Invalid date");
+            }
+
+            onSubmit({
+                ...values,
+                date: formattedDate,
+                amount: amountInMiliunits,
+            });
+        } catch (error) {
+            console.error("Error submitting form:", error);
+            throw error;
+        }
     };
     const handleDelete = () => {
         onDelete?.();
@@ -156,7 +172,8 @@ export const TransactionForm = ({
                                 <Input 
                                 disabled={disabled}
                                 placeholder="Add a payee"
-                                {...field}
+                                value={field.value || ""}
+                                onChange={field.onChange}
                                 />
                             </FormControl>
                         </FormItem>

@@ -33,6 +33,9 @@ export const useGetTransactions = () => {
                 amount: convertAmountFromMiliunits(transaction.amount),
             }));
         },
+        refetchOnWindowFocus: true,
+        refetchOnMount: true,
+        staleTime: 0,
     });
 
     return query;
