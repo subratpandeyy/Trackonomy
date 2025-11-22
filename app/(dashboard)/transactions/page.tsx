@@ -28,7 +28,6 @@ enum VARIANTS {
     IMPORT = "IMPORT"
 };
 
-// Fix: Properly type for string[][] data
 interface ImportResults {
     data: string[][];
     errors: any[];
@@ -52,7 +51,6 @@ const TransactionsPage = () => {
     }
 
     const onUpload = (data: string[][]) => {
-        // Pass the raw CSV data directly to ImportCard
         setImportResults({
             data: data,
             errors: [],
@@ -71,14 +69,15 @@ const TransactionsPage = () => {
         transactionsQuery.isLoading ||
         deleteTransactions.isPending;
 
+    // FIX: Remove the return value to match ImportCard's expected type
     const onSubmitImport = async (formattedData: any[]) => {
         const accountId = await confirm();
 
         if (!accountId) {
-            return toast.error("Please select an account to continue.");
+            toast.error("Please select an account to continue.");
+            return; // Just return void, don't return the toast
         }
 
-        // Transform the formatted data from ImportCard to your transaction schema
         const values: Transaction[] = formattedData.map((item) => ({
             id: `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             date: new Date(item.date),
