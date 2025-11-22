@@ -18,7 +18,7 @@ interface SelectedColumnsState {
 type Props = {
   data: string[][];
   onCancel: () => void;
-  onSubmit: (data: Transaction[]) => void;
+  onSubmit: (data: any[]) => void;
 };
 
 type Transaction = {
@@ -85,7 +85,7 @@ export const ImportCard = ({ data, onCancel, onSubmit }: Props) => {
       }, {});
     });
 
-    const formattedData: Transaction[] = arrayOfData
+    const formattedData: any[] = arrayOfData
       .map((item) => {
         try {
           let parsedDate: Date | null = null;
