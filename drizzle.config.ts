@@ -5,10 +5,11 @@ config({ path: ".env.local" });
 
 export default defineConfig({
     schema: "./db/schema.ts",
-    driver: "pg",
+    dialect: "postgresql", // Changed from 'driver' to 'dialect'
     dbCredentials: {
-        connectionString: process.env.DATABASE_URL!,
+        url: process.env.DATABASE_URL!, // Changed from 'connectionString' to 'url'
     },
+    out: "./drizzle", // Add this line to specify output directory
     verbose: true,
     strict: true,
 });

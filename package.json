@@ -7,9 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:generate": "drizzle-kit generate:pg --schema db/schema.ts --out ./drizzle",
+    "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx ./scripts/migrate.ts",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "db:push": "drizzle-kit push"
   },
   "dependencies": {
     "@clerk/backend": "^1.23.8",
@@ -33,7 +34,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
-    "drizzle-orm": "^0.30.10",
+    "drizzle-orm": "^0.44.7",
     "drizzle-zod": "^0.5.1",
     "hono": "^4.6.19",
     "lucide-react": "^0.474.0",
@@ -65,7 +66,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "dotenv": "^16.4.7",
-    "drizzle-kit": "^0.20.17",
+    "drizzle-kit": "^0.31.7",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
     "pg": "^8.13.1",
